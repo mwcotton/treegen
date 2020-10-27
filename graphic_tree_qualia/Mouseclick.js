@@ -78,13 +78,23 @@ function drawForward(drawingState, params) {
     stoch_factor = getRndFloat(0.5,1.5);
     console.log("stochastic " + stoch_factor);
   }
-  else if (document.getElementById("select_length").value == "ini_stoch50"){
+  else if (document.getElementById("select_length").value == "ini_stoch10"){
     stoch_factor = getRndFloat(0.9,1.1);
+  }
+  // make angle stochastic
+  var factor_angle = 1;
+  if (document.getElementById("select_angle").value == "angle_var-1"){
+    factor_angle = getRndFloat(0.99,1.01);
+    console.log('1%' + factor_angle);
+  }
+  else if (document.getElementById("select_angle").value == "angle_var-01"){
+    factor_angle = getRndFloat(0.999,1.001);
+    console.log('0.1%' + factor_angle);
   }
   let {x, y} = drawingState.state.position;
   let d = drawingState.state.direction;
-  let newX = x + params.length * cos(d) * stoch_factor;
-  let newY = y + params.length * sin(d) * stoch_factor;
+  let newX = x + params.length * cos(d * factor_angle) * stoch_factor;
+  let newY = y + params.length * sin(d * factor_angle) * stoch_factor;
   push();
   strokeWeight(drawingState.state.strokeWeight || 1);
   line(x, y, newX, newY);
