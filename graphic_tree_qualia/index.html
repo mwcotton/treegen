@@ -25,7 +25,18 @@
             <label for="length">Branch length:</label><br>
             <input type="text" id="length" name="length" value="2"><br>
         </div>
+
         <br>
+        <label for="rules">   Choose stochastic variability of length:</label>
+        <select name="s_Length" id="select_length">
+        <optgroup label="Stochastic or deterministic length:">
+            <option value="ini_det">deterministic</option>
+            <option value="ini_stoch50">stochastic: 50% variability </option>
+            <option value="ini_stoch10">stochastic: 10% variability </option>
+        </optgroup>    
+        </select>
+        <br>
+
         <label for="rules">   Choose initial state:</label>
         <select name="Initial state" id="select_init">
         <optgroup label="Initial state:">

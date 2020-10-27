@@ -67,11 +67,24 @@ function getFrule() {
   return f;
 }
 
+function getRndFloat(min, max) {
+  return Math.random() * (max - min)  + min;
+  }
+
 function drawForward(drawingState, params) {
+  // make length stochastic
+  var stoch_factor = 1;
+  if (document.getElementById("select_length").value == "ini_stoch50"){
+    stoch_factor = getRndFloat(0.5,1.5);
+    console.log("stochastic " + stoch_factor);
+  }
+  else if (document.getElementById("select_length").value == "ini_stoch50"){
+    stoch_factor = getRndFloat(0.9,1.1);
+  }
   let {x, y} = drawingState.state.position;
   let d = drawingState.state.direction;
-  let newX = x + params.length * cos(d);
-  let newY = y + params.length * sin(d);
+  let newX = x + params.length * cos(d) * stoch_factor;
+  let newY = y + params.length * sin(d) * stoch_factor;
   push();
   strokeWeight(drawingState.state.strokeWeight || 1);
   line(x, y, newX, newY);
@@ -79,7 +92,6 @@ function drawForward(drawingState, params) {
   drawingState.state.position.x = newX;
   drawingState.state.position.y = newY;
 };
-
 
 
 function applyRule(rules, char) {
