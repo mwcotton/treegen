@@ -10,12 +10,22 @@
 
     <h1>Modeling fractals with L-systems</h1>
 
-    <label for="iter">Number of iterations:</label><br>
-    <input type="text" id="iter" name="iter" value="6"><br>
-
-    <p><h3>Define the rules:</h3></p>
-
     <form onsubmit=getRules()>
+ 
+        <p><h3>Define the rules:</h3></p>
+
+        <div class="text_boxes">
+
+            <label for="iter">Number of iterations:</label><br>
+            <input type="text" id="iter" name="iter" value="6"><br>
+
+            <label for="angle">Branching angle (°):</label><br>
+            <input type="text" id="angle" name="angle" value="25"><br>
+
+            <label for="length">Branch length:</label><br>
+            <input type="text" id="length" name="length" value="2"><br>
+        </div>
+        <br>
         <label for="rules">   Choose initial state:</label>
         <select name="Initial state" id="select_init">
         <optgroup label="Initial state:">

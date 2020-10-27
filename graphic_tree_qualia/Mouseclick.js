@@ -9,8 +9,6 @@ class Point {
     }
   }
 }
-
-
 class DrawingState {
   constructor(position, direction) {
     this.state = Object.create(null);
@@ -125,8 +123,8 @@ function getRules() {
 
   let tree = {
     params: {
-      angle: 25,
-      length: 2,
+      angle: document.getElementById("angle").value,
+      length: document.getElementById("length").value,
     },
     axiom: getIni(),
     rules: {
