@@ -41,29 +41,53 @@ function getIni() {
 
 function getXrule() {
   const x_inputs = {
-    'x_1': 'F[+X]F[-X]+X',
-    'x_2': 'F[+X][-X]FX',
-    'x_3': 'F-[[X]+X]+F[+FX]-X',
-    'x_4': 'F-[[X]+X]+F[+FX]-X',
+    1: 'F[+X]F[-X]+X',
+    2: 'F[+X][-X]FX',
+    3: 'F-[[X]+X]+F[+FX]-X',
+    4: 'F-[[X]+X]+F[+FX]-X',
   }
-  var input = document.getElementById("x_rule").value
-  var x = x_inputs[input];
-  //document.getElementById("demo").innerHTML = x;
-  //console.log(x_inputs)
-  //console.log(x)
-
+  if (document.getElementById("type_rules").value == 'stochastic') {
+    var rand = Math.random();
+    var n = Object.keys(x_inputs).length;
+    //console.log(rand)
+    var x_num = 0;
+    for (var i = 1; i <= n; i++) {    
+      if (rand < i/n) {
+        x_num = i;
+        break;
+      }
+    }
+  } else {
+    var x_num = document.getElementById("x_rule").value
+  }
+  var x = x_inputs[parseFloat(x_num)];
+  //console.log(x);
   return x;
 }
 
 function getFrule() {
   const f_inputs = {
-    'f_1': 'FF',
-    'f_2': 'F[+F]F[-F]F',
-    'f_3': 'F[+F]F[-F][F]',
-    'f_4': 'FF-[-F+F+F]+[+F-F-F]',
+    1: 'FF',
+    2: 'F[+F]F[-F]F',
+    3: 'F[+F]F[-F][F]',
+    4: 'FF-[-F+F+F]+[+F-F-F]',
   }
-  var input = document.getElementById("f_rule").value;
-  var f = f_inputs[input];
+  if (document.getElementById("type_rules").value == 'stochastic') {
+    var rand = Math.random();
+    var n = Object.keys(f_inputs).length;
+    //console.log(rand)
+    var f_num = 0;
+    for (var i = 1; i <= n; i++) {    
+      if (rand < i/n) {
+        f_num = i;
+        break;
+      }
+    }
+  } else {
+    var f_num = document.getElementById("f_rule").value
+  }
+  var f = f_inputs[parseFloat(f_num)];
+  //console.log(f);
   return f;
 }
 
@@ -135,8 +159,8 @@ function getRules() {
 
   let tree = {
     params: {
-      angle: document.getElementById("angle").value,
-      length: document.getElementById("length").value,
+      angle: parseFloat(document.getElementById("angle").value),
+      length: parseFloat(document.getElementById("length").value),
     },
     axiom: getIni(),
     rules: {
@@ -188,7 +212,7 @@ async function mouseClicked() {
     const drawingState = new DrawingState(origin, -90);
     const shouldDraw = i === numIters - 1;
     systemState = renderAGeneration(system, systemState, drawingState, false);
-    console.log(systemState);
+    //console.log(systemState);
   }
   const drawingState = new DrawingState(origin, -90);
   const fragmentIterator = fragmentGenerator(system, systemState);
