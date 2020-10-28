@@ -29,6 +29,7 @@ class DrawingState {
     return this.stack.length;
   }
 }
+
 function getIni() {
   const ini_inputs = {
     'ini_x': 'X',
@@ -68,9 +69,11 @@ function getXrule() {
 function getFrule() {
   const f_inputs = {
     1: 'FF',
-    2: 'F[+F]F[-F]F',
+    2: 'F[+F]F[−F]F',
     3: 'F[+F]F[-F][F]',
     4: 'FF-[-F+F+F]+[+F-F-F]',
+    5: 'F[+F]F',
+    6: 'F[−F]F',
   }
   if (document.getElementById("type_rules").value == 'stochastic') {
     var rand = Math.random();
@@ -87,7 +90,7 @@ function getFrule() {
     var f_num = document.getElementById("f_rule").value
   }
   var f = f_inputs[parseFloat(f_num)];
-  //console.log(f);
+  console.log(f);
   return f;
 }
 
@@ -204,16 +207,20 @@ function setup() {
 
 async function mouseClicked() {
   system = getRules();
+  let systemState = system.axiom;
   numIters = getNumIters();
   const origin = new Point(mouseX, mouseY);
-  let systemState = system.axiom;
-  console.log(systemState);
+  //let systemState = 0;
+
   for (let i = 1; i < numIters; i++) {
+    system = getRules();
+    //systemState = system.axiom;
     const drawingState = new DrawingState(origin, -90);
     const shouldDraw = i === numIters - 1;
-    systemState = renderAGeneration(system, systemState, drawingState, false);
-    //console.log(systemState);
+    systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
+    console.log(i);
   }
+  
   const drawingState = new DrawingState(origin, -90);
   const fragmentIterator = fragmentGenerator(system, systemState);
   drawSystem(system, fragmentIterator, drawingState);
