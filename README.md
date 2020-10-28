@@ -1,5 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/Down-To-Programme/treegen?branch=main)](https://bettercodehub.com/)
+
 # treegen
 
 ## Build Setup
