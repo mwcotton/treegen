@@ -95,6 +95,9 @@ function getFrule() {
 }
 
 function getRndFloat(min, max) {
+  /** Parameters: min and max
+   * returns float in interval [min, max)
+   */
   return Math.random() * (max - min)  + min;
   }
 
@@ -105,13 +108,23 @@ function drawForward(drawingState, params) {
     stoch_factor = getRndFloat(0.5,1.5);
     console.log("stochastic " + stoch_factor);
   }
-  else if (document.getElementById("select_length").value == "ini_stoch50"){
+  else if (document.getElementById("select_length").value == "ini_stoch10"){
     stoch_factor = getRndFloat(0.9,1.1);
+  }
+  // make angle stochastic
+  var factor_angle = 1;
+  if (document.getElementById("select_angle").value == "angle_var-1"){
+    factor_angle = getRndFloat(0.99,1.01);
+    console.log('1%' + factor_angle);
+  }
+  else if (document.getElementById("select_angle").value == "angle_var-01"){
+    factor_angle = getRndFloat(0.999,1.001);
+    console.log('0.1%' + factor_angle);
   }
   let {x, y} = drawingState.state.position;
   let d = drawingState.state.direction;
-  let newX = x + params.length * cos(d) * stoch_factor;
-  let newY = y + params.length * sin(d) * stoch_factor;
+  let newX = x + params.length * cos(d * factor_angle) * stoch_factor;
+  let newY = y + params.length * sin(d * factor_angle) * stoch_factor;
   push();
   strokeWeight(drawingState.state.strokeWeight || 1);
   line(x, y, newX, newY);
@@ -122,6 +135,10 @@ function drawForward(drawingState, params) {
 
 
 function applyRule(rules, char) {
+  /** apply a single rule
+   *  returns the output of the rule if there is one, 
+   *  or the original character if there is no rule for it.
+   */
   return rules[char] || char;
 }
 
@@ -132,6 +149,12 @@ function *fragmentGenerator(system, string) {
 }
 
 function renderAGeneration (system, previousGeneration) {
+  /** Parameters
+   * system
+   * previousGeneration
+   * ==================
+   * apply rules for every character in previousGeneration
+   */
   let nextGeneration = '';
   for (const character of previousGeneration) {
     const nextCharacters = applyRule(system.rules, character);
@@ -159,7 +182,7 @@ function drawSystem(system, fragmentIterator, drawingState) {
 }
 
 function getRules() {
-
+  /** declaring the axiom and production rules */
   let tree = {
     params: {
       angle: parseFloat(document.getElementById("angle").value),
@@ -171,6 +194,9 @@ function getRules() {
       F: getFrule(),
     },
     commands: {
+      /** Each command is a function. Its name corresponds to 
+       *  a symbol in the system state string. 
+       *  When we encounter the symbol, we run the function. */
       'F': drawForward,
       '-'(drawingState, params) {
         drawingState.state.direction -= params.angle;
@@ -197,6 +223,7 @@ function getNumIters() {
 const CANVAS_BOUNDS = new Point(1000, 1000);
 
 function setup() {
+  /** create a canvas and configure p5 */
   createCanvas(CANVAS_BOUNDS.x, CANVAS_BOUNDS.y);
   angleMode(DEGREES);
   noLoop();
