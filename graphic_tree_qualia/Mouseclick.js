@@ -68,6 +68,9 @@ function getFrule() {
 }
 
 function getRndFloat(min, max) {
+  /** Parameters: min and max
+   * returns float in interval [min, max)
+   */
   return Math.random() * (max - min)  + min;
   }
 
@@ -105,6 +108,10 @@ function drawForward(drawingState, params) {
 
 
 function applyRule(rules, char) {
+  /** apply a single rule
+   *  returns the output of the rule if there is one, 
+   *  or the original character if there is no rule for it.
+   */
   return rules[char] || char;
 }
 
@@ -115,6 +122,12 @@ function *fragmentGenerator(system, string) {
 }
 
 function renderAGeneration (system, previousGeneration) {
+  /** Parameters
+   * system
+   * previousGeneration
+   * ==================
+   * apply rules for every character in previousGeneration
+   */
   let nextGeneration = '';
   for (const character of previousGeneration) {
     const nextCharacters = applyRule(system.rules, character);
@@ -142,7 +155,7 @@ function drawSystem(system, fragmentIterator, drawingState) {
 }
 
 function getRules() {
-
+  /** declaring the axiom and production rules */
   let tree = {
     params: {
       angle: document.getElementById("angle").value,
@@ -154,6 +167,9 @@ function getRules() {
       F: getFrule(),
     },
     commands: {
+      /** Each command is a function. Its name corresponds to 
+       *  a symbol in the system state string. 
+       *  When we encounter the symbol, we run the function. */
       'F': drawForward,
       '-'(drawingState, params) {
         drawingState.state.direction -= params.angle;
@@ -180,6 +196,7 @@ function getNumIters() {
 const CANVAS_BOUNDS = new Point(1000, 1000);
 
 function setup() {
+  /** create a canvas and configure p5 */
   createCanvas(CANVAS_BOUNDS.x, CANVAS_BOUNDS.y);
   angleMode(DEGREES);
   noLoop();
