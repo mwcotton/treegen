@@ -1,0 +1,16 @@
+[
+  {
+    "name": "inspire",
+    "path": "/inspire",
+    "component": "/Users/alexn/Documents/DTP/treegen/pages/inspire.vue",
+    "chunkName": "pages/inspire",
+    "_name": "_25184f85"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "/Users/alexn/Documents/DTP/treegen/pages/index.vue",
+    "chunkName": "pages/index",
+    "_name": "_6d1ff23d"
+  }
+]
