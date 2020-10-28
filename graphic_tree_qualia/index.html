@@ -24,7 +24,16 @@
 
             <label for="length">Branch length:</label><br>
             <input type="text" id="length" name="length" value="2"><br>
+
+            <label for="type_rules">   Choose stochastic vs deterministic rules:</label>
+            <select name="type_rules" id="type_rules">
+                <optgroup label="Stochastic or deterministic rules:">
+                    <option value="stochastic">stochastic</option>
+                    <option value="deterministic">deterministic</option>
+                </optgroup>    
+            </select>
         </div>
+
 
         <br>
         <label for="rules">   Choose variability of length:</label>
@@ -58,20 +67,23 @@
         <label for="x_rules">   Choose rule for X:</label>
         <select name="Rule for X" id="x_rule">
         <optgroup label="Replace X with:">
-            <option value="x_1">1. F[+X]F[-X]+X</option>
-            <option value="x_2">2. F[+X][-X]FX</option>
-            <option value="x_3">3. F-[[X]+X]+F[+FX]-X</option>
-            <option value="x_4">4. F-[[X]+X]+F[+FX]-X</option>
+            <option value="1_x">1. F[+X]F[-X]+X</option>
+            <option value="2_x">2. F[+X][-X]FX</option>
+            <option value="3_x">3. F-[[X]+X]+F[+FX]-X</option>
+            <option value="4_x">4. F-[[X]+X]+F[+FX]-X</option>
         </optgroup>
         </select>
         <br>
         <label for="f_rules">   Choose rule for F:</label>
         <select name="Rule for F" id="f_rule">
         <optgroup label="Replace F with:">
-            <option value="f_1">1. FF</option>
-            <option value="f_2">2. F[+F]F[-F]F</option>
-            <option value="f_3">3. F[+F]F[-F][F]</option>
-            <option value="f_4">4. FF-[-F+F+F]+[+F-F-F]</option>
+            <option value="1_f">1. FF</option>
+            <option value="2_f">2. F[+F]F[-F]F</option>
+            <option value="3_f">3. F[+F]F[-F][F]</option>
+            <option value="4_f">4. FF-[-F+F+F]+[+F-F-F]</option>
+            <option value="5_f">5. F[+F]F</option>
+            <option value="6_f">6. F[-F]F</option>
+
         </optgroup>
         </select>
         <br><br>
