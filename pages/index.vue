@@ -4,7 +4,7 @@
       <div class="text-center">
         <h1 style=font-size:50px><span class="special-color">Tree</span>Gen</h1>
       </div>
-      <v-card>
+      <v-card class="rounded-card">
         <v-card-title class="headline">
           Modeling fractals with L-systems
         </v-card-title>
@@ -57,9 +57,9 @@
             required
           ></v-select>
           <v-slider
-            v-model="ang"
+            v-model="branchAng"
             color="orange"
-            label="Branching Anlge (°)"
+            label="Branching Angle (°)"
             min="0"
             max="360"
             thumb-label
@@ -71,7 +71,7 @@
             required
           ></v-select>
           <v-slider
-            v-model="branLen"
+            v-model="branchLen"
             color="orange"
             label="Branch Length"
             min="0"
@@ -83,7 +83,7 @@
         <v-divider class="mt-12"></v-divider>
         <v-card-actions>
           <v-btn text>
-            Cancel
+            Reset
           </v-btn>
           <v-spacer></v-spacer>
           <v-slide-x-reverse-transition>
@@ -105,13 +105,13 @@
               <span>Refresh form</span>
             </v-tooltip>
           </v-slide-x-reverse-transition>
-          <v-btn
+          <!-- <v-btn
             color="orange"
             text
             @click="submit"
           >
             Submit
-          </v-btn>
+          </v-btn> -->
         </v-card-actions>
         </v-card-text>
       </v-card>
@@ -122,6 +122,7 @@
 <script>
 import Logo from '../components/Logo.vue'
 import VuetifyLogo from '../components/VuetifyLogo.vue'
+
 
 export default {
   data(){
@@ -155,4 +156,7 @@ export default {
 h1 .special-color { 
   color:greenyellow; 
 } 
+.rounded-card{
+    border-radius:25px;
+}
 </style>
