@@ -2,75 +2,118 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
       <div class="text-center">
-        <logo />
-        <vuetify-logo />
+        <h1 style=font-size:50px><span class="special-color">Tree</span>Gen</h1>
       </div>
-      <v-card>
+      <v-card class="rounded-card">
         <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
+          Modeling fractals with L-systems
         </v-card-title>
         <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
+          <p>Specify details of the L-System below.</p>
+        <v-card-text>
+          <v-slider
+              v-model="iters"
+              color="orange"
+              label="Number or Iterations"
+              min="1"
+              max="10"
+              thumb-label
+            ></v-slider>
+          <v-select
+            v-model="initState"
+            :items="initStates"
+            label="Initial State"
+            required
+          ></v-select>
+          <v-select
+            v-model="choiceRule"
+            :items="choiceRules"
+            label="System Rules"
+            required
+          ></v-select>
+          <v-select
+            v-model="xRule"
+            :items="xRules"
+            label="Rule for X"
+            :disabled="(choiceRule=='Stochastic')"
+            :hint="[(choiceRule=='Stochastic') ? 'No rule choice for stochastic system. Rules considered with equal probability.' : '' ]"
+            persistent-hint
+            required
+          ></v-select>
+          <v-select
+            v-model="fRule"
+            :items="fRules"
+            label="Rule for F"
+            :disabled="(choiceRule=='Stochastic')"
+            :hint="[(choiceRule=='Stochastic') ? 'No rule choice for stochastic system. Rules considered with equal probability.' : '' ]"
+            persistent-hint
+            required
+          ></v-select>
           <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
+          <v-select
+            v-model="branchStochastic"
+            :items="branchStochastics"
+            label="Branch Stochasticity"
+            required
+          ></v-select>
+          <v-slider
+            v-model="branchAng"
+            color="orange"
+            label="Branching Angle (°)"
+            min="0"
+            max="360"
+            thumb-label
+          ></v-slider>
+          <v-select
+            v-model="lengthStochastic"
+            :items="lengthStochastics"
+            label="Length Stochasticity"
+            required
+          ></v-select>
+          <v-slider
+            v-model="branchLen"
+            color="orange"
+            label="Branch Length"
+            min="0"
+            max="10"
+            step=0.1
+            thumb-label
+          ></v-slider>
         </v-card-text>
+        <v-divider class="mt-12"></v-divider>
         <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
+          <v-btn text>
+            Reset
           </v-btn>
+          <v-spacer></v-spacer>
+          <v-slide-x-reverse-transition>
+            <v-tooltip
+              v-if="formHasErrors"
+              left
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  class="my-0"
+                  v-bind="attrs"
+                  @click="resetForm"
+                  v-on="on"
+                >
+                  <v-icon>mdi-refresh</v-icon>
+                </v-btn>
+              </template>
+              <span>Refresh form</span>
+            </v-tooltip>
+          </v-slide-x-reverse-transition>
+          <!-- <v-btn
+            color="orange"
+            text
+            @click="submit"
+          >
+            Submit
+          </v-btn> -->
         </v-card-actions>
+        </v-card-text>
       </v-card>
     </v-col>
   </v-row>
@@ -80,10 +123,40 @@
 import Logo from '../components/Logo.vue'
 import VuetifyLogo from '../components/VuetifyLogo.vue'
 
+
 export default {
+  data(){
+    return{
+      lengthStochastics: ["Deterministic", "50% Variable", "10% Variable"],
+      lengthStochastic: false,
+      branchStochastics: ["Deterministic", "1% Variable", "0.1% Variable"],
+      branchStochastic: false,
+      branchLen: 0,
+      iters: 1,
+      branchAng: 0,
+      initStates: ["X", "F"],
+      initState: false,
+      choiceRules: ["Deterministic", "Stochastic"],
+      choiceRule: false,
+      fRules: ["FF", "F[+F]F[-F]F", "F[+F]F[-F][F]", "FF-[-F+F+F]+[+F-F-F]", "F[+F]F", "F[-F]F"],
+      fRule: false,
+      xRules: ["F[+X]F[-X]+X", "F[+X][-X]FX", "F-[[X]+X]+F[+FX]-X", "F-[[X]+X]+F[+FX]-X"],
+      xRule: false,
+      stochy: true
+    }
+  },
   components: {
     Logo,
     VuetifyLogo
   }
 }
 </script>
+
+<style scoped>
+h1 .special-color { 
+  color:greenyellow; 
+} 
+.rounded-card{
+    border-radius:25px;
+}
+</style>
