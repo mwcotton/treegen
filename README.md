@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![BCH compliance](https://bettercodehub.com/edge/badge/Down-To-Programme/treegen?branch=main)](https://bettercodehub.com/)
+[![BCH compliance](https://bettercodehub.com/edge/badge/Down-To-Programme/2020-software-engineering-project2-treegen?branch=master)](https://bettercodehub.com/)
 
 # treegen
 
