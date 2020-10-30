@@ -98,13 +98,13 @@
               <span>Refresh form</span>
             </v-tooltip>
           </v-slide-x-reverse-transition>
-          <!-- <v-btn
+          <v-btn
             color="orange"
             text
-            @click="submit"
+            @click="clearCanvas"
           >
-            Submit
-          </v-btn> -->
+            Clear Canvas
+          </v-btn>
         </v-card-actions>
         </v-card-text>
       </v-card>
@@ -115,6 +115,7 @@
       </div>
       <v-card class="rounded-card">
         <DrawingBoard
+        ref="canv"
         :lengthStochastic="lengthStochastic"
         :branchStochastic="branchStochastic"
         :branchLen="branchLen"
@@ -160,6 +161,9 @@ export default {
     DrawingBoard
   },
   methods: {
+    clearCanvas () {
+      this.$refs.canv.clearCanvas()
+    },
     resetForm () {
       this.lengthStochastic = "Deterministic"
       this.branchStochastic = "Deterministic",
