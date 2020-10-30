@@ -9,7 +9,7 @@ export default {
 
   // Add the router base
   router: {
-    base: '/Down-To-Programme/treegen/'
+    base: '/Down-To-Programme/treegen/pages/'
   },
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
