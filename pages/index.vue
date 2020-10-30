@@ -46,6 +46,22 @@
               persistent-hint
               required
             ></v-select>
+            <textarea
+              v-model="customxRule"
+              placeholder="Type rule for X here"
+              label="Custom rule for X"
+              :title="[
+                xRule == 'Custom' 
+                  ? '' 
+                  : 'Select Custom in the menu above to define a custom rule for X',
+              ]"
+              :style="[choiceRule == 'Stochastic' ? {'color': 'grey'} : {'color': 'white'}]"
+              rows="1"
+              cols="61"
+              :disabled="xRule != 'Custom' || choiceRule == 'Stochastic'"
+              required
+            ></textarea>
+            <br />
             <v-select
               v-model="fRule"
               :items="fRules"
@@ -59,6 +75,22 @@
               persistent-hint
               required
             ></v-select>
+            <textarea
+              v-model="customfRule"
+              placeholder="Type rule for F here"
+              label="Custom rule for F"
+              :title="[
+                fRule == 'Custom' 
+                  ? '' 
+                  : 'Select Custom in the menu above to define a custom rule for F',
+              ]"
+              :style="[choiceRule == 'Stochastic' ? {'color': 'grey'} : {'color': 'white'}]"
+              rows="1"
+              cols="61"
+              :disabled="fRule != 'Custom' || choiceRule == 'Stochastic'"
+              required
+            ></textarea>
+            <br />
             <br />
             <v-select
               v-model="branchStochastic"
@@ -70,8 +102,8 @@
               v-model="branchAng"
               color="orange"
               label="Branching Angle (°)"
-              min="0"
-              max="360"
+              min="-180"
+              max="180"
               thumb-label
             ></v-slider>
             <v-select
@@ -137,6 +169,8 @@
           :choiceRule="choiceRule"
           :fRule="fRule"
           :xRule="xRule"
+          :customxRule="customxRule"
+          :customfRule="customfRule"
         ></DrawingBoard>
       </v-card>
     </v-col>
@@ -170,15 +204,19 @@ export default {
         'FF-[-F+F+F]+[+F-F-F]',
         'F[+F]F',
         'F[-F]F',
+        'Custom',
       ],
       fRule: 'FF',
+      customxRule: '',
       xRules: [
         'F[+X]F[-X]+X',
         'F[+X][-X]FX',
         'F-[[X]+X]+F[+FX]-X',
         'F-[[X]+X]+F[+FX]-X',
+        'Custom',
       ],
       xRule: 'F[+X]F[-X]+X',
+      customfRule:'',
     };
   },
   components: {
@@ -194,7 +232,9 @@ export default {
         (this.initState = 'X'),
         (this.choiceRule = 'Deterministic'),
         (this.fRule = 'FF'),
-        (this.xRule = 'F[+X]F[-X]+X');
+        (this.xRule = 'F[+X]F[-X]+X'),
+        (this.customxRule = ''),
+        (this.customfRule = '');
     },
   },
 };
@@ -204,6 +244,7 @@ export default {
 h1 .special-color {
   color: greenyellow;
 }
+
 .rounded-card {
   border-radius: 25px;
 }
