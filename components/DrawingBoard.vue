@@ -24,7 +24,9 @@ export default {
     initState: String,
     choiceRule: String,
     fRule: String,
+    customfRule: String,
     xRule: String,
+    customxRule: String,
   },
   data: function () {
     return {
@@ -35,12 +37,14 @@ export default {
         "FF-[-F+F+F]+[+F-F-F]",
         "F[+F]F",
         "F[-F]F",
+        "Custom",
       ],
       xRules: [
         "F[+X]F[-X]+X",
         "F[+X][-X]FX",
         "F-[[X]+X]+F[+FX]-X",
         "F-[[X]+X]+F[+FX]-X",
+        "Custom",
       ],
     };
   },
@@ -165,7 +169,7 @@ export default {
     getXrule() {
       if (this.choiceRule == "Stochastic") {
         var rand = Math.random();
-        var n = this.xRules.length;
+        var n = this.xRules.length - 1;
         //console.log(rand)
         var x_num = -1;
         for (var i = 1; i <= n; i++) {
@@ -176,17 +180,19 @@ export default {
         }
         var x = this.xRules[x_num];
         //console.log('(getXrule) Rule for x = '+ x);
+      } else if (this.xRule == 'Custom') {
+        var x = this.customxRule;
       } else {
         var x = this.xRule;
       }
-
+      console.log(this.customxRule);
       return x;
     },
 
     getFrule() {
       if (this.choiceRule == "Stochastic") {
         var rand = Math.random();
-        var n = this.fRules.length;
+        var n = this.fRules.length - 1;
         //console.log(rand)
         var f_num = -1;
         for (var i = 1; i <= n; i++) {
@@ -196,6 +202,8 @@ export default {
           }
         }
         var f = this.fRules[f_num];
+      } else if (this.fRule == 'Custom') {
+        var f = this.customfRule;
       } else {
         var f = this.fRule;
       }
