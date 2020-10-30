@@ -1,7 +1,7 @@
 <template>
   <div height="100" width="100%">
     <vue-p5
-      v-on="{ setup, draw, keypressed, mouseclicked }"
+      v-on="{ setup, draw, keypressed, mouseclicked, mouseout, mouseover }"
       id="drawingarea"
       class="bordered"
       height="100"
@@ -12,7 +12,13 @@
 
 <script>
 import Vue from "vue";
-import VueP5, { mouseX, mouseY, strokeWeight } from "vue-p5";
+import VueP5, {
+  mouseX,
+  mouseY,
+  strokeWeight,
+  mouseOver,
+  mouseOut,
+} from "vue-p5";
 //import mouseX from 'vue-p5';
 //import mouseY from 'vue-p5';
 //import strokeWeight from 'vue-p5';
@@ -34,6 +40,8 @@ export default {
   },
   data: function () {
     return {
+      clearWatch: false,
+      inCanvas: false,
       sket: false,
       fRules: [
         "FF",
@@ -55,8 +63,20 @@ export default {
     VueP5: () => import("vue-p5"),
   },
   methods: {
+    keypressed() {
+      this.clearCanvas();
+    },
     clearCanvas() {
+      this.clearWatch = true;
       this.sket.clear();
+    },
+    mouseover(sketch) {
+      this.inCanvas = true;
+      console.log("over");
+    },
+    mouseout(sketch) {
+      this.inCanvas = false;
+      console.log("out");
     },
     setup(sketch) {
       var drawingarea = document.getElementById("drawingarea");
@@ -65,6 +85,8 @@ export default {
       sketch.stroke(255);
       sketch.angleMode(this.DEGREES);
       sketch.noLoop();
+      console.log(drawingarea);
+      console.log(sketch);
       this.sket = sketch;
     },
 
@@ -78,12 +100,12 @@ export default {
     drawForward(drawingState, params, sketch) {
       // make length stochastic
       var stoch_factor = 1;
-      console.log(this.lengthStochastic);
-      console.log(this.branchStochastic);
+      // console.log(this.lengthStochastic);
+      // console.log(this.branchStochastic);
 
       if (this.lengthStochastic == "50% Variable") {
         stoch_factor = this.getRndFloat(0.5, 1.5);
-        console.log("stochastic " + stoch_factor);
+        // console.log("stochastic " + stoch_factor);
       } else if (this.lengthStochastic == "10% Variable") {
         stoch_factor = this.getRndFloat(0.9, 1.1);
       }
@@ -91,15 +113,15 @@ export default {
       var factor_angle = 1;
       if (this.branchStochastic == "1% Variable") {
         factor_angle = this.getRndFloat(0.99, 1.01);
-        console.log("1%" + factor_angle);
+        // console.log("1%" + factor_angle);
       }
       if (this.branchStochastic == "0.1% Variable") {
         factor_angle = this.getRndFloat(0.999, 1.001);
-        console.log("0.1%" + factor_angle);
+        // console.log("0.1%" + factor_angle);
       }
       let { x, y } = drawingState.state.position;
       let d = drawingState.state.direction;
-      console.log("(drawForward) Angle d = " + d);
+      // console.log("(drawForward) Angle d = " + d);
       var conversion = 180 / Math.PI;
       let newX =
         x +
@@ -133,16 +155,23 @@ export default {
           //  drawForward(drawingState, system.params, sketch);
           //} else {
           const drawingFunction = system.commands[character];
-          //console.log(drawingFunction);
+          //// console.log(drawingFunction);
 
           if (drawingFunction) {
             drawingFunction(drawingState, system.params, sketch);
           }
           //}
         }
-        requestAnimationFrame(drawFrame);
+        if (!this.clearWatch) {
+          requestAnimationFrame(drawFrame);
+        }
       };
-      requestAnimationFrame(drawFrame);
+      if (!this.clearWatch) {
+        requestAnimationFrame(drawFrame);
+      }
+      if (this.clearWatch) {
+        this.clearCanvas();
+      }
     },
 
     applyRule(rules, char) {
@@ -175,63 +204,75 @@ export default {
     },
 
     async mouseclicked(sketch) {
-      //console.log('clickity click');
-      const origin = new Point(sketch.mouseX, sketch.mouseY);
-      //console.log(params)
-      let system = {
-        params: {
-          angle: this.branchAng,
-          length: this.branchLen,
-        },
-        axiom: this.initState,
-        rules: {
-          X: this.xRule,
-          F: this.fRule,
-        },
-        commands: {
-          /** Each command is a function. Its name corresponds to
-           *  a symbol in the system state string.
-           *  When we encounter the symbol, we run the function. */
-          //'F': printme,
-          F: this.drawForward,
-          // (this.lengthStochastic,this.branchStochastic,drawingState, params)
-          "-"(drawingState, params, sketch) {
-            drawingState.state.direction -= params.angle;
+      var rect = document.getElementById("drawingarea").getBoundingClientRect();
+      if (
+        sketch.mouseX > 0 &&
+        sketch.mouseY > 0 &&
+        sketch.mouseY < rect.bottom - rect.top &&
+        sketch.mouseX < rect.right - rect.left
+      ) {
+        console.log(rect.top, rect.right, rect.bottom, rect.left);
+        console.log(sketch.mouseX, sketch.mouseY);
+        console.log(sketch);
+        //// console.log('clickity click');
+        this.clearWatch = false;
+        const origin = new Point(sketch.mouseX, sketch.mouseY);
+        //// console.log(params)
+        let system = {
+          params: {
+            angle: this.branchAng,
+            length: this.branchLen,
           },
-          "+"(drawingState, params, sketch) {
-            drawingState.state.direction += params.angle;
+          axiom: this.initState,
+          rules: {
+            X: this.xRule,
+            F: this.fRule,
           },
-          "["(drawingState, params, sketch) {
-            drawingState.push();
+          commands: {
+            /** Each command is a function. Its name corresponds to
+             *  a symbol in the system state string.
+             *  When we encounter the symbol, we run the function. */
+            //'F': printme,
+            F: this.drawForward,
+            // (this.lengthStochastic,this.branchStochastic,drawingState, params)
+            "-"(drawingState, params, sketch) {
+              drawingState.state.direction -= params.angle;
+            },
+            "+"(drawingState, params, sketch) {
+              drawingState.state.direction += params.angle;
+            },
+            "["(drawingState, params, sketch) {
+              drawingState.push();
+            },
+            "]"(drawingState, params, sketch) {
+              drawingState.pop();
+            },
           },
-          "]"(drawingState, params, sketch) {
-            drawingState.pop();
-          },
-        },
-      };
+        };
 
-      let systemState = system.axiom;
-      for (let i = 1; i < this.iters; i++) {
-        console.log(i);
+        let systemState = system.axiom;
+        for (let i = 1; i < this.iters; i++) {
+          // console.log(i);
+          const drawingState = new DrawingState(origin, -90);
+          const shouldDraw = i === this.iters - 1;
+          //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
+          systemState = this.renderAGeneration(system, systemState);
+        }
         const drawingState = new DrawingState(origin, -90);
-        const shouldDraw = i === this.iters - 1;
-        //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
-        systemState = this.renderAGeneration(system, systemState);
+        const fragmentIterator = this.fragmentGenerator(system, systemState);
+        this.drawSystem(system, fragmentIterator, drawingState, sketch);
       }
-      const drawingState = new DrawingState(origin, -90);
-      const fragmentIterator = this.fragmentGenerator(system, systemState);
-      this.drawSystem(system, fragmentIterator, drawingState, sketch);
     },
   },
 };
 
 function printme(str) {
-  console.log(str);
+  // console.log(str);
 }
 
 class Point {
   constructor(xOrPoint, y) {
-    console.log(xOrPoint);
+    // console.log(xOrPoint);
     if (xOrPoint.x !== undefined && xOrPoint.y !== undefined) {
       this.x = xOrPoint.x;
       this.y = xOrPoint.y;
@@ -244,7 +285,7 @@ class Point {
 
 class DrawingState {
   constructor(position, direction) {
-    console.log(position);
+    // console.log(position);
     this.state = Object.create(null);
     this.state.position =
       (position && new Point(position.x, position.y)) || new Point(0, 0);
