@@ -1,10 +1,38 @@
 [
   {
+    "name": "about",
+    "path": "/about",
+    "component": "/Users/alexn/Documents/DTP/treegen/pages/about.vue",
+    "chunkName": "pages/about",
+    "_name": "_4d681778"
+  },
+  {
+    "name": "about 2",
+    "path": "/about 2",
+    "component": "/Users/alexn/Documents/DTP/treegen/pages/about 2.vue",
+    "chunkName": "pages/about 2",
+    "_name": "_77fe0a8a"
+  },
+  {
     "name": "inspire",
     "path": "/inspire",
     "component": "/Users/alexn/Documents/DTP/treegen/pages/inspire.vue",
     "chunkName": "pages/inspire",
     "_name": "_25184f85"
+  },
+  {
+    "name": "links",
+    "path": "/links",
+    "component": "/Users/alexn/Documents/DTP/treegen/pages/links.vue",
+    "chunkName": "pages/links",
+    "_name": "_3d7c4da4"
+  },
+  {
+    "name": "links 2",
+    "path": "/links 2",
+    "component": "/Users/alexn/Documents/DTP/treegen/pages/links 2.vue",
+    "chunkName": "pages/links 2",
+    "_name": "_98453494"
   },
   {
     "name": "index",

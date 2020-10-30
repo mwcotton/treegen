@@ -12,6 +12,7 @@
 
 <script>
 import Vue from "vue";
+
 import VueP5, {
   mouseX,
   mouseY,
@@ -26,6 +27,7 @@ import VueP5, {
 //import {cos, sin} from Math;
 //import {Point, DrawingState, drawSystem} from '../graphic_tree_split_up_js/Drawing.js';
 
+
 export default {
   props: {
     lengthStochastic: String,
@@ -36,7 +38,9 @@ export default {
     initState: String,
     choiceRule: String,
     fRule: String,
+    customfRule: String,
     xRule: String,
+    customxRule: String,
   },
   data: function () {
     return {
@@ -50,12 +54,14 @@ export default {
         "FF-[-F+F+F]+[+F-F-F]",
         "F[+F]F",
         "F[-F]F",
+        "Custom",
       ],
       xRules: [
         "F[+X]F[-X]+X",
         "F[+X][-X]FX",
         "F-[[X]+X]+F[+FX]-X",
         "F-[[X]+X]+F[+FX]-X",
+        "Custom",
       ],
     };
   },
@@ -81,12 +87,9 @@ export default {
     setup(sketch) {
       var drawingarea = document.getElementById("drawingarea");
       sketch.resizeCanvas(drawingarea.offsetWidth, 0.75 * window.innerHeight);
-      // sketch.background('white');
       sketch.stroke(255);
       sketch.angleMode(this.DEGREES);
       sketch.noLoop();
-      console.log(drawingarea);
-      console.log(sketch);
       this.sket = sketch;
     },
 
@@ -100,12 +103,9 @@ export default {
     drawForward(drawingState, params, sketch) {
       // make length stochastic
       var stoch_factor = 1;
-      // console.log(this.lengthStochastic);
-      // console.log(this.branchStochastic);
 
       if (this.lengthStochastic == "50% Variable") {
         stoch_factor = this.getRndFloat(0.5, 1.5);
-        // console.log("stochastic " + stoch_factor);
       } else if (this.lengthStochastic == "10% Variable") {
         stoch_factor = this.getRndFloat(0.9, 1.1);
       }
@@ -113,7 +113,6 @@ export default {
       var factor_angle = 1;
       if (this.branchStochastic == "1% Variable") {
         factor_angle = this.getRndFloat(0.99, 1.01);
-        // console.log("1%" + factor_angle);
       }
       if (this.branchStochastic == "0.1% Variable") {
         factor_angle = this.getRndFloat(0.999, 1.001);
@@ -202,7 +201,86 @@ export default {
       }
       return nextGeneration;
     },
+    
+    getXrule() {
+      if (this.choiceRule == "Stochastic") {
+        var rand = Math.random();
+        var n = this.xRules.length - 1;
+        //console.log(rand)
+        var x_num = -1;
+        for (var i = 1; i <= n; i++) {
+          if (rand < i / n) {
+            x_num = i - 1;
+            break;
+          }
+        }
+        var x = this.xRules[x_num];
+        //console.log('(getXrule) Rule for x = '+ x);
+      } else if (this.xRule == 'Custom') {
+        var x = this.customxRule;
+      } else {
+        var x = this.xRule;
+      }
+      console.log(this.customxRule);
+      return x;
+    },
 
+    getFrule() {
+      if (this.choiceRule == "Stochastic") {
+        var rand = Math.random();
+        var n = this.fRules.length - 1;
+        //console.log(rand)
+        var f_num = -1;
+        for (var i = 1; i <= n; i++) {
+          if (rand < i / n) {
+            f_num = i - 1;
+            break;
+          }
+        }
+        var f = this.fRules[f_num];
+      } else if (this.fRule == 'Custom') {
+        var f = this.customfRule;
+      } else {
+        var f = this.fRule;
+      }
+      //console.log('(getFrule) Rule for f = '+ f);
+      return f;
+    },
+
+    getRules() {
+      let tree = {
+        params: {
+          angle: this.branchAng,
+          length: this.branchLen,
+        },
+        axiom: this.initState,
+        rules: {
+          X: this.getXrule(),
+          F: this.getFrule(),
+        },
+        commands: {
+          /** Each command is a function. Its name corresponds to
+           *  a symbol in the system state string.
+           *  When we encounter the symbol, we run the function. */
+          //'F': printme,
+          F: this.drawForward,
+          // (this.lengthStochastic,this.branchStochastic,drawingState, params)
+          "-"(drawingState, params, sketch) {
+            drawingState.state.direction -= params.angle;
+          },
+          "+"(drawingState, params, sketch) {
+            drawingState.state.direction += params.angle;
+          },
+          "["(drawingState, params, sketch) {
+            drawingState.push();
+          },
+          "]"(drawingState, params, sketch) {
+            drawingState.pop();
+          },
+        },
+      };
+      return tree;
+    },
     async mouseclicked(sketch) {
       var rect = document.getElementById("drawingarea").getBoundingClientRect();
       if (
@@ -217,62 +295,28 @@ export default {
         //// console.log('clickity click');
         this.clearWatch = false;
         const origin = new Point(sketch.mouseX, sketch.mouseY);
-        //// console.log(params)
-        let system = {
-          params: {
-            angle: this.branchAng,
-            length: this.branchLen,
-          },
-          axiom: this.initState,
-          rules: {
-            X: this.xRule,
-            F: this.fRule,
-          },
-          commands: {
-            /** Each command is a function. Its name corresponds to
-             *  a symbol in the system state string.
-             *  When we encounter the symbol, we run the function. */
-            //'F': printme,
-            F: this.drawForward,
-            // (this.lengthStochastic,this.branchStochastic,drawingState, params)
-            "-"(drawingState, params, sketch) {
-              drawingState.state.direction -= params.angle;
-            },
-            "+"(drawingState, params, sketch) {
-              drawingState.state.direction += params.angle;
-            },
-            "["(drawingState, params, sketch) {
-              drawingState.push();
-            },
-            "]"(drawingState, params, sketch) {
-              drawingState.pop();
-            },
-          },
-        };
-
+        let system = this.getRules();
         let systemState = system.axiom;
+
         for (let i = 1; i < this.iters; i++) {
-          // console.log(i);
+          console.log(i);
+          system = this.getRules();
           const drawingState = new DrawingState(origin, -90);
           const shouldDraw = i === this.iters - 1;
           //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
           systemState = this.renderAGeneration(system, systemState);
         }
+
         const drawingState = new DrawingState(origin, -90);
         const fragmentIterator = this.fragmentGenerator(system, systemState);
         this.drawSystem(system, fragmentIterator, drawingState, sketch);
-      }
+      },
     },
   },
 };
 
-function printme(str) {
-  // console.log(str);
-}
-
 class Point {
   constructor(xOrPoint, y) {
-    // console.log(xOrPoint);
     if (xOrPoint.x !== undefined && xOrPoint.y !== undefined) {
       this.x = xOrPoint.x;
       this.y = xOrPoint.y;
@@ -285,7 +329,6 @@ class Point {
 
 class DrawingState {
   constructor(position, direction) {
-    // console.log(position);
     this.state = Object.create(null);
     this.state.position =
       (position && new Point(position.x, position.y)) || new Point(0, 0);
