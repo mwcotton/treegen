@@ -44,26 +44,34 @@ export default {
               sketch.noLoop();
         },
 
+        getRndFloat(min, max) {
+          /** Parameters: min and max
+           * returns float in interval [min, max)
+           */
+          return Math.random() * (max - min)  + min;
+        },
+
         drawForward(drawingState, params, sketch) {
           // make length stochastic
           var stoch_factor = 1;
           console.log(this.lengthStochastic);
+          console.log(this.branchStochastic);
 
           if (this.lengthStochastic == '50% Variable'){
-            stoch_factor = getRndFloat(0.5,1.5);
+            stoch_factor = this.getRndFloat(0.5,1.5);
             console.log("stochastic " + stoch_factor);
           }
           else if (this.lengthStochastic == "10% Variable"){
-            stoch_factor = getRndFloat(0.9,1.1);
+            stoch_factor = this.getRndFloat(0.9,1.1);
           }
           // make angle stochastic
           var factor_angle = 1;
           if (this.branchStochastic == '1% Variable'){
-            factor_angle = getRndFloat(0.99,1.01);
+            factor_angle = this.getRndFloat(0.99,1.01);
             console.log('1%' + factor_angle);
           }
           if (this.branchStochastic == '0.1% Variable'){
-            factor_angle = getRndFloat(0.999,1.001);
+            factor_angle = this.getRndFloat(0.999,1.001);
             console.log('0.1%' + factor_angle);
           }
           let {x, y} = drawingState.state.position;
@@ -134,10 +142,7 @@ export default {
         },
         
         async mouseclicked(sketch) {
-          console.log('clickity click');
-          //console.log(sketch.mouseX);
-          //console.log(sketch.mouseY);     
-          //sketch.strokeWeight(40);
+          //console.log('clickity click');
           const origin = new Point(sketch.mouseX, sketch.mouseY);          
           //console.log(params)
           let system = {
