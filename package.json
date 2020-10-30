@@ -7,12 +7,8 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
+    "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup",
     "test": "ava test/**/*.spec.js"
-  },
-  "ava": {
-    "files": [
-      "test/**/*"
-    ]
   },
   "ava": {
     "require": [
@@ -22,6 +18,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "nuxt": "^2.14.5",
+    "vue": "^2.6.12",
+    "vue-p5": "^0.8.3",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
@@ -37,6 +35,7 @@
     "jsdom": "^16.4.0",
     "jsdom-global": "^3.0.2",
     "prettier": "^2.1.1",
+    "push-dir": "^0.4.1",
     "require-extension-hooks": "^0.3.3",
     "require-extension-hooks-babel": "^1.0.0",
     "require-extension-hooks-vue": "^3.0.0",
