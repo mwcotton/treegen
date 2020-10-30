@@ -1,7 +1,13 @@
 <template>
-    <div height=100 width=100%>
-    <vue-p5 v-on="{setup, draw, keypressed, mouseclicked}" id="drawingarea" class="bordered" height=100 width=100%></vue-p5>
-    </div>
+  <div height="100" width="100%">
+    <vue-p5
+      v-on="{ setup, draw, keypressed, mouseclicked }"
+      id="drawingarea"
+      class="bordered"
+      height="100"
+      width="100%"
+    ></vue-p5>
+  </div>
 </template>
 
 <script>
@@ -15,192 +21,208 @@ import VueP5, { mouseX, mouseY, strokeWeight } from 'vue-p5';
 //import {Point, DrawingState, drawSystem} from '../graphic_tree_split_up_js/Drawing.js';
 
 export default {
-    props: {
-        lengthStochastic: String,
-        branchStochastic: String,
-        branchLen: Number,
-        iters: Number,
-        branchAng: Number,
-        initState: String,
-        choiceRule: String,
-        fRule: String,
-        xRule: String
+  props: {
+    lengthStochastic: String,
+    branchStochastic: String,
+    branchLen: Number,
+    iters: Number,
+    branchAng: Number,
+    initState: String,
+    choiceRule: String,
+    fRule: String,
+    xRule: String,
+  },
+  data: function () {
+    return {
+      fRules: [
+        'FF',
+        'F[+F]F[-F]F',
+        'F[+F]F[-F][F]',
+        'FF-[-F+F+F]+[+F-F-F]',
+        'F[+F]F',
+        'F[-F]F',
+      ],
+      xRules: [
+        'F[+X]F[-X]+X',
+        'F[+X][-X]FX',
+        'F-[[X]+X]+F[+FX]-X',
+        'F-[[X]+X]+F[+FX]-X',
+      ],
+    };
+  },
+  components: {
+    VueP5: () => import('vue-p5'),
+  },
+  methods: {
+    setup(sketch) {
+      var drawingarea = document.getElementById('drawingarea');
+      sketch.resizeCanvas(drawingarea.offsetWidth, 0.75 * window.innerHeight);
+      // sketch.background('white');
+      sketch.stroke(255);
+      sketch.angleMode(this.DEGREES);
+      sketch.noLoop();
     },
-    data: function() {
-        return {
-        fRules: ["FF", "F[+F]F[-F]F", "F[+F]F[-F][F]", "FF-[-F+F+F]+[+F-F-F]", "F[+F]F", "F[-F]F"],
-        xRules: ["F[+X]F[-X]+X", "F[+X][-X]FX", "F-[[X]+X]+F[+FX]-X", "F-[[X]+X]+F[+FX]-X"],
+
+    getRndFloat(min, max) {
+      /** Parameters: min and max
+       * returns float in interval [min, max)
+       */
+      return Math.random() * (max - min) + min;
+    },
+
+    drawForward(drawingState, params, sketch) {
+      // make length stochastic
+      var stoch_factor = 1;
+      console.log(this.lengthStochastic);
+      console.log(this.branchStochastic);
+
+      if (this.lengthStochastic == '50% Variable') {
+        stoch_factor = this.getRndFloat(0.5, 1.5);
+        console.log('stochastic ' + stoch_factor);
+      } else if (this.lengthStochastic == '10% Variable') {
+        stoch_factor = this.getRndFloat(0.9, 1.1);
+      }
+      // make angle stochastic
+      var factor_angle = 1;
+      if (this.branchStochastic == '1% Variable') {
+        factor_angle = this.getRndFloat(0.99, 1.01);
+        console.log('1%' + factor_angle);
+      }
+      if (this.branchStochastic == '0.1% Variable') {
+        factor_angle = this.getRndFloat(0.999, 1.001);
+        console.log('0.1%' + factor_angle);
+      }
+      let { x, y } = drawingState.state.position;
+      let d = drawingState.state.direction;
+      console.log('(drawForward) Angle d = ' + d);
+      var conversion = 180 / Math.PI;
+      let newX =
+        x +
+        params.length *
+          Math.cos((d / conversion) * factor_angle) *
+          stoch_factor;
+      let newY =
+        y +
+        params.length *
+          Math.sin((d / conversion) * factor_angle) *
+          stoch_factor;
+      drawingState.push();
+      //drawingState.stack.push(JSON.stringify(drawingState.state));
+      sketch.strokeWeight(drawingState.state.strokeWeight || 1);
+      sketch.line(x, y, newX, newY);
+      drawingState.pop();
+      //drawingState.state = JSON.parse(drawingState.stack.pop() || '{}');
+      drawingState.state.position.x = newX;
+      drawingState.state.position.y = newY;
+    },
+
+    drawSystem(system, fragmentIterator, drawingState, sketch) {
+      const drawFrame = () => {
+        const iter = fragmentIterator.next();
+        if (iter.done) {
+          return;
         }
+        const fragment = iter.value;
+        for (const character of fragment) {
+          //if ( character == 'F'){
+          //  drawForward(drawingState, system.params, sketch);
+          //} else {
+          const drawingFunction = system.commands[character];
+          //console.log(drawingFunction);
+
+          if (drawingFunction) {
+            drawingFunction(drawingState, system.params, sketch);
+          }
+          //}
+        }
+        requestAnimationFrame(drawFrame);
+      };
+      requestAnimationFrame(drawFrame);
     },
-    components: {
-        VueP5: () => import("vue-p5"),
+
+    applyRule(rules, char) {
+      /** apply a single rule
+       *  returns the output of the rule if there is one,
+       *  or the original character if there is no rule for it.
+       */
+      return rules[char] || char;
     },
-    methods: {          
-        setup(sketch) {
-              var drawingarea = document.getElementById("drawingarea");
-              sketch.resizeCanvas(drawingarea.offsetWidth, 0.75* window.innerHeight);
-              // sketch.background('white');
-              sketch.stroke(255)
-              sketch.angleMode(this.DEGREES);
-              sketch.noLoop();
-        },
 
-        getRndFloat(min, max) {
-          /** Parameters: min and max
-           * returns float in interval [min, max)
-           */
-          return Math.random() * (max - min)  + min;
-        },
+    *fragmentGenerator(system, string) {
+      for (const char of string) {
+        yield this.applyRule(system.rules, char);
+      }
+    },
 
-        drawForward(drawingState, params, sketch) {
-          // make length stochastic
-          var stoch_factor = 1;
-          console.log(this.lengthStochastic);
-          console.log(this.branchStochastic);
+    renderAGeneration(system, previousGeneration) {
+      /** Parameters
+       * system
+       * previousGeneration
+       * ==================
+       * apply rules for every character in previousGeneration
+       */
+      let nextGeneration = '';
+      for (const character of previousGeneration) {
+        const nextCharacters = this.applyRule(system.rules, character);
+        nextGeneration += nextCharacters;
+      }
+      return nextGeneration;
+    },
 
-          if (this.lengthStochastic == '50% Variable'){
-            stoch_factor = this.getRndFloat(0.5,1.5);
-            console.log("stochastic " + stoch_factor);
-          }
-          else if (this.lengthStochastic == "10% Variable"){
-            stoch_factor = this.getRndFloat(0.9,1.1);
-          }
-          // make angle stochastic
-          var factor_angle = 1;
-          if (this.branchStochastic == '1% Variable'){
-            factor_angle = this.getRndFloat(0.99,1.01);
-            console.log('1%' + factor_angle);
-          }
-          if (this.branchStochastic == '0.1% Variable'){
-            factor_angle = this.getRndFloat(0.999,1.001);
-            console.log('0.1%' + factor_angle);
-          }
-          let {x, y} = drawingState.state.position;
-          let d = drawingState.state.direction;
-          console.log('(drawForward) Angle d = '+ d);
-          var conversion = 180/Math.PI;
-          let newX = x + params.length * Math.cos(d / conversion * factor_angle) * stoch_factor;
-          let newY = y + params.length * Math.sin(d / conversion * factor_angle) * stoch_factor;
-          drawingState.push();
-          //drawingState.stack.push(JSON.stringify(drawingState.state));
-          sketch.strokeWeight(drawingState.state.strokeWeight || 1);
-          sketch.line(x, y, newX, newY);
-          drawingState.pop();
-          //drawingState.state = JSON.parse(drawingState.stack.pop() || '{}');
-          drawingState.state.position.x = newX;
-          drawingState.state.position.y = newY;
+    async mouseclicked(sketch) {
+      //console.log('clickity click');
+      const origin = new Point(sketch.mouseX, sketch.mouseY);
+      //console.log(params)
+      let system = {
+        params: {
+          angle: this.branchAng,
+          length: this.branchLen,
         },
+        axiom: this.initState,
+        rules: {
+          X: this.xRule,
+          F: this.fRule,
+        },
+        commands: {
+          /** Each command is a function. Its name corresponds to
+           *  a symbol in the system state string.
+           *  When we encounter the symbol, we run the function. */
+          //'F': printme,
+          F: this.drawForward,
+          // (this.lengthStochastic,this.branchStochastic,drawingState, params)
+          '-'(drawingState, params, sketch) {
+            drawingState.state.direction -= params.angle;
+          },
+          '+'(drawingState, params, sketch) {
+            drawingState.state.direction += params.angle;
+          },
+          '['(drawingState, params, sketch) {
+            drawingState.push();
+          },
+          ']'(drawingState, params, sketch) {
+            drawingState.pop();
+          },
+        },
+      };
 
-        drawSystem(system, fragmentIterator, drawingState, sketch) {
-          const drawFrame = () => {
-            const iter = fragmentIterator.next();
-            if (iter.done) {
-              return;
-            }
-            const fragment = iter.value;
-            for (const character of fragment) {
-              //if ( character == 'F'){
-              //  drawForward(drawingState, system.params, sketch);
-              //} else {
-              const drawingFunction = system.commands[character];
-                //console.log(drawingFunction);
+      let systemState = system.axiom;
+      for (let i = 1; i < this.iters; i++) {
+        console.log(i);
+        const drawingState = new DrawingState(origin, -90);
+        const shouldDraw = i === this.iters - 1;
+        //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
+        systemState = this.renderAGeneration(system, systemState);
+      }
+      const drawingState = new DrawingState(origin, -90);
+      const fragmentIterator = this.fragmentGenerator(system, systemState);
+      this.drawSystem(system, fragmentIterator, drawingState, sketch);
+    },
+  },
+};
 
-              if (drawingFunction) {
-                drawingFunction(drawingState, system.params, sketch);
-              }
-              //}
-            }
-            requestAnimationFrame(drawFrame);
-          };
-          requestAnimationFrame(drawFrame);
-        },
-        
-        applyRule(rules, char) {
-          /** apply a single rule
-           *  returns the output of the rule if there is one, 
-           *  or the original character if there is no rule for it.
-           */
-          return rules[char] || char;
-        },
-        
-        *fragmentGenerator(system, string) {
-          for (const char of string) {
-            yield this.applyRule(system.rules, char);
-          }
-        },
-        
-        renderAGeneration(system, previousGeneration) {
-          /** Parameters
-           * system
-           * previousGeneration
-           * ==================
-           * apply rules for every character in previousGeneration
-           */
-          let nextGeneration = '';
-          for (const character of previousGeneration) {
-            const nextCharacters = this.applyRule(system.rules, character);
-            nextGeneration += nextCharacters;
-          }
-          return nextGeneration;
-        },
-        
-        async mouseclicked(sketch) {
-          //console.log('clickity click');
-          const origin = new Point(sketch.mouseX, sketch.mouseY);          
-          //console.log(params)
-          let system = {
-            params: {
-              angle: this.branchAng,
-              length: this.branchLen
-            },
-            axiom: this.initState,
-            rules: {
-                X: this.xRule,
-                F: this.fRule
-            },
-            commands: {
-                /** Each command is a function. Its name corresponds to 
-                 *  a symbol in the system state string. 
-                 *  When we encounter the symbol, we run the function. */
-                //'F': printme,
-                'F': this.drawForward,
-                // (this.lengthStochastic,this.branchStochastic,drawingState, params)
-                '-'(drawingState, params, sketch) {
-                drawingState.state.direction -= params.angle;
-                },
-                '+'(drawingState, params, sketch) {
-                drawingState.state.direction += params.angle;
-                },
-                '['(drawingState, params, sketch) {
-                drawingState.push();
-                },
-                ']'(drawingState, params, sketch) {
-                drawingState.pop();
-                },
-            }
-          }
-          
-          let systemState = system.axiom;
-          for (let i = 1; i < this.iters; i++) {
-            console.log(i);
-            const drawingState = new DrawingState(origin, -90);
-            const shouldDraw = i === this.iters - 1;
-            //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
-            systemState = this.renderAGeneration(system, systemState);
-          }
-          const drawingState = new DrawingState(origin, -90);
-          const fragmentIterator = this.fragmentGenerator(system, systemState);
-          this.drawSystem(system, fragmentIterator, drawingState, sketch);
-        },
-
-        
-    }
-}
-
-function printme(str){
+function printme(str) {
   console.log(str);
 }
-
 
 class Point {
   constructor(xOrPoint, y) {
@@ -216,29 +238,27 @@ class Point {
 }
 
 class DrawingState {
-    constructor(position, direction) {
-      console.log(position);
-      this.state = Object.create(null);
-      this.state.position = position && new Point(position.x, position.y) || new Point(0, 0);
-      this.state.direction = direction || 0; // right
-      this.stack = [];
-    }
-  
-    push() {
-      this.stack.push(JSON.stringify(this.state));
-    }
-  
-    pop() {
-      this.state = JSON.parse(this.stack.pop() || '{}');
-    }
-  
-    get depth() {
-      return this.stack.length;
-    }
-}
+  constructor(position, direction) {
+    console.log(position);
+    this.state = Object.create(null);
+    this.state.position =
+      (position && new Point(position.x, position.y)) || new Point(0, 0);
+    this.state.direction = direction || 0; // right
+    this.stack = [];
+  }
 
+  push() {
+    this.stack.push(JSON.stringify(this.state));
+  }
+
+  pop() {
+    this.state = JSON.parse(this.stack.pop() || '{}');
+  }
+
+  get depth() {
+    return this.stack.length;
+  }
+}
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
