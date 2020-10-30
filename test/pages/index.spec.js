@@ -1,4 +1,3 @@
-// test/components/ToDo.spec.js
 import { shallow } from 'vue-test-utils';
 import test from 'ava';
 
