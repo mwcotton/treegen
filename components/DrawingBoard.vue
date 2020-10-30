@@ -76,8 +76,10 @@ export default {
           }
           let {x, y} = drawingState.state.position;
           let d = drawingState.state.direction;
-          let newX = x + params.length * Math.cos(d * factor_angle) * stoch_factor;
-          let newY = y + params.length * Math.sin(d * factor_angle) * stoch_factor;
+          console.log('(drawForward) Angle d = '+ d);
+          var conversion = 180/Math.PI;
+          let newX = x + params.length * Math.cos(d / conversion * factor_angle) * stoch_factor;
+          let newY = y + params.length * Math.sin(d / conversion * factor_angle) * stoch_factor;
           drawingState.push();
           //drawingState.stack.push(JSON.stringify(drawingState.state));
           sketch.strokeWeight(drawingState.state.strokeWeight || 1);
