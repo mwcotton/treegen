@@ -1,4 +1,10 @@
 {
+  "DrawingBoard": {
+    "description": "Auto imported from components/DrawingBoard.vue"
+  },
+  "LazyDrawingBoard": {
+    "description": "Auto imported from components/DrawingBoard.vue"
+  },
   "Logo": {
     "description": "Auto imported from components/Logo.vue"
   },
