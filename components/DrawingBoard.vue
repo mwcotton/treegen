@@ -39,7 +39,8 @@ export default {
         setup(sketch) {
               var drawingarea = document.getElementById("drawingarea");
               sketch.resizeCanvas(drawingarea.offsetWidth, 0.75* window.innerHeight);
-              sketch.background('white');
+              // sketch.background('white');
+              sketch.stroke(255)
               sketch.angleMode(this.DEGREES);
               sketch.noLoop();
         },
