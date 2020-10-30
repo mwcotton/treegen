@@ -1,7 +1,7 @@
 <template>
   <div height="100" width="100%">
     <vue-p5
-      v-on="{ setup, draw, keypressed, mouseclicked }"
+      v-on="{ setup, draw, keypressed, mouseclicked, mouseout, mouseover }"
       id="drawingarea"
       class="bordered"
       height="100"
@@ -12,7 +12,21 @@
 
 <script>
 import Vue from "vue";
-import VueP5, { mouseX, mouseY, strokeWeight } from "vue-p5";
+
+import VueP5, {
+  mouseX,
+  mouseY,
+  strokeWeight,
+  mouseOver,
+  mouseOut,
+} from "vue-p5";
+//import mouseX from 'vue-p5';
+//import mouseY from 'vue-p5';
+//import strokeWeight from 'vue-p5';
+
+//import {cos, sin} from Math;
+//import {Point, DrawingState, drawSystem} from '../graphic_tree_split_up_js/Drawing.js';
+
 
 export default {
   props: {
@@ -24,10 +38,15 @@ export default {
     initState: String,
     choiceRule: String,
     fRule: String,
+    customfRule: String,
     xRule: String,
+    customxRule: String,
   },
   data: function () {
     return {
+      clearWatch: false,
+      inCanvas: false,
+      sket: false,
       fRules: [
         "FF",
         "F[+F]F[-F]F",
@@ -35,27 +54,43 @@ export default {
         "FF-[-F+F+F]+[+F-F-F]",
         "F[+F]F",
         "F[-F]F",
+        "Custom",
       ],
       xRules: [
         "F[+X]F[-X]+X",
         "F[+X][-X]FX",
         "F-[[X]+X]+F[+FX]-X",
         "F-[[X]+X]+F[+FX]-X",
+        "Custom",
       ],
     };
   },
   components: {
     VueP5: () => import("vue-p5"),
   },
-  
-  methods: {          
+  methods: {
+    keypressed() {
+      this.clearCanvas();
+    },
+    clearCanvas() {
+      this.clearWatch = true;
+      this.sket.clear();
+    },
+    mouseover(sketch) {
+      this.inCanvas = true;
+      console.log("over");
+    },
+    mouseout(sketch) {
+      this.inCanvas = false;
+      console.log("out");
+    },
     setup(sketch) {
-          var drawingarea = document.getElementById("drawingarea");
-          sketch.resizeCanvas(drawingarea.offsetWidth, 0.75* window.innerHeight);
-          // sketch.background('white');
-          sketch.stroke(255)
-          sketch.angleMode(this.DEGREES);
-          sketch.noLoop();
+      var drawingarea = document.getElementById("drawingarea");
+      sketch.resizeCanvas(drawingarea.offsetWidth, 0.75 * window.innerHeight);
+      sketch.stroke(255);
+      sketch.angleMode(this.DEGREES);
+      sketch.noLoop();
+      this.sket = sketch;
     },
 
     getRndFloat(min, max) {
@@ -71,7 +106,6 @@ export default {
 
       if (this.lengthStochastic == "50% Variable") {
         stoch_factor = this.getRndFloat(0.5, 1.5);
-        console.log("stochastic " + stoch_factor);
       } else if (this.lengthStochastic == "10% Variable") {
         stoch_factor = this.getRndFloat(0.9, 1.1);
       }
@@ -79,14 +113,14 @@ export default {
       var factor_angle = 1;
       if (this.branchStochastic == "1% Variable") {
         factor_angle = this.getRndFloat(0.99, 1.01);
-        console.log("1%" + factor_angle);
       }
       if (this.branchStochastic == "0.1% Variable") {
         factor_angle = this.getRndFloat(0.999, 1.001);
-        console.log("0.1%" + factor_angle);
+        // console.log("0.1%" + factor_angle);
       }
       let { x, y } = drawingState.state.position;
       let d = drawingState.state.direction;
+      // console.log("(drawForward) Angle d = " + d);
       var conversion = 180 / Math.PI;
       let newX =
         x +
@@ -120,16 +154,23 @@ export default {
           //  drawForward(drawingState, system.params, sketch);
           //} else {
           const drawingFunction = system.commands[character];
-          //console.log(drawingFunction);
+          //// console.log(drawingFunction);
 
           if (drawingFunction) {
             drawingFunction(drawingState, system.params, sketch);
           }
           //}
         }
-        requestAnimationFrame(drawFrame);
+        if (!this.clearWatch) {
+          requestAnimationFrame(drawFrame);
+        }
       };
-      requestAnimationFrame(drawFrame);
+      if (!this.clearWatch) {
+        requestAnimationFrame(drawFrame);
+      }
+      if (this.clearWatch) {
+        this.clearCanvas();
+      }
     },
 
     applyRule(rules, char) {
@@ -139,7 +180,6 @@ export default {
        */
       return rules[char] || char;
     },
-    
 
     *fragmentGenerator(system, string) {
       for (const char of string) {
@@ -161,11 +201,11 @@ export default {
       }
       return nextGeneration;
     },
-
+    
     getXrule() {
       if (this.choiceRule == "Stochastic") {
         var rand = Math.random();
-        var n = this.xRules.length;
+        var n = this.xRules.length - 1;
         //console.log(rand)
         var x_num = -1;
         for (var i = 1; i <= n; i++) {
@@ -176,17 +216,19 @@ export default {
         }
         var x = this.xRules[x_num];
         //console.log('(getXrule) Rule for x = '+ x);
+      } else if (this.xRule == 'Custom') {
+        var x = this.customxRule;
       } else {
         var x = this.xRule;
       }
-
+      console.log(this.customxRule);
       return x;
     },
 
     getFrule() {
       if (this.choiceRule == "Stochastic") {
         var rand = Math.random();
-        var n = this.fRules.length;
+        var n = this.fRules.length - 1;
         //console.log(rand)
         var f_num = -1;
         for (var i = 1; i <= n; i++) {
@@ -196,6 +238,8 @@ export default {
           }
         }
         var f = this.fRules[f_num];
+      } else if (this.fRule == 'Custom') {
+        var f = this.customfRule;
       } else {
         var f = this.fRule;
       }
@@ -237,24 +281,36 @@ export default {
       };
       return tree;
     },
-
     async mouseclicked(sketch) {
-      const origin = new Point(sketch.mouseX, sketch.mouseY);
-      let system = this.getRules();
-      let systemState = system.axiom;
+      var rect = document.getElementById("drawingarea").getBoundingClientRect();
+      if (
+        sketch.mouseX > 0 &&
+        sketch.mouseY > 0 &&
+        sketch.mouseY < rect.bottom - rect.top &&
+        sketch.mouseX < rect.right - rect.left
+      ) {
+        console.log(rect.top, rect.right, rect.bottom, rect.left);
+        console.log(sketch.mouseX, sketch.mouseY);
+        console.log(sketch);
+        //// console.log('clickity click');
+        this.clearWatch = false;
+        const origin = new Point(sketch.mouseX, sketch.mouseY);
+        let system = this.getRules();
+        let systemState = system.axiom;
 
-      for (let i = 1; i < this.iters; i++) {
-        console.log(i);
-        system = this.getRules();
+        for (let i = 1; i < this.iters; i++) {
+          console.log(i);
+          system = this.getRules();
+          const drawingState = new DrawingState(origin, -90);
+          const shouldDraw = i === this.iters - 1;
+          //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
+          systemState = this.renderAGeneration(system, systemState);
+        }
+
         const drawingState = new DrawingState(origin, -90);
-        const shouldDraw = i === this.iters - 1;
-        //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
-        systemState = this.renderAGeneration(system, systemState);
+        const fragmentIterator = this.fragmentGenerator(system, systemState);
+        this.drawSystem(system, fragmentIterator, drawingState, sketch);
       }
-
-      const drawingState = new DrawingState(origin, -90);
-      const fragmentIterator = this.fragmentGenerator(system, systemState);
-      this.drawSystem(system, fragmentIterator, drawingState, sketch);
     },
   },
 };

@@ -27,110 +27,82 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
+    <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
       <v-toolbar-title>
-        <h2><span class="special-color">D</span>own<span class="special-color">T</span>o<span class="special-color">P</span>rogramme</h2>
+        <h2>
+          <span class="special-color">D</span>own<span class="special-color"
+            >T</span
+          >o<span class="special-color">P</span>rogramme
+        </h2>
       </v-toolbar-title>
-      <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
         <nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
+    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
       <v-list>
         <v-list-item @click.native="right = !right">
           <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
+            <v-icon light> mdi-repeat </v-icon>
           </v-list-item-action>
           <v-list-item-title>Switch drawer (click me)</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span><a class=bottomlink href="https://github.com/Down-To-Programme/treegen">Find the repository!</a>     DownToProgramme &copy; {{ new Date().getFullYear() }} </span>
+    <v-footer :absolute="!fixed" app>
+      <span
+        ><a
+          class="bottomlink"
+          href="https://github.com/Down-To-Programme/treegen"
+          >Find the repository!</a
+        >
+        DownToProgramme &copy; {{ new Date().getFullYear() }}
+      </span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       clipped: false,
       drawer: false,
       fixed: false,
       items: [
         {
-          icon: 'mdi-pencil',
-          title: 'Draw Trees',
-          to: '/'
+          icon: "mdi-pencil",
+          title: "Draw Trees",
+          to: "/",
         },
         {
-          icon: 'mdi-information',
-          title: 'About',
-          to: '/about'
+          icon: "mdi-information",
+          title: "About",
+          to: "/about",
         },
         {
-          icon: 'mdi-link',
-          title: 'Links',
-          to: '/links'
-        }
+          icon: "mdi-link",
+          title: "Links",
+          to: "/links",
+        },
       ],
       miniVariant: false,
       right: false,
       rightDrawer: false,
-      title: 'DownToProgramme'
-    }
-  }
-}
+      title: "DownToProgramme",
+    };
+  },
+};
 </script>
 
 <style scoped>
 .bottomlink {
-  color:greenyellow;
+  color: greenyellow;
 }
-h2 .special-color { 
-  color:greenyellow; 
-} 
+h2 .special-color {
+  color: greenyellow;
+}
 </style>

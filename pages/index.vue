@@ -46,6 +46,26 @@
               persistent-hint
               required
             ></v-select>
+            <textarea
+              v-model="customxRule"
+              placeholder="Type rule for X here"
+              label="Custom rule for X"
+              :title="[
+                xRule == 'Custom'
+                  ? ''
+                  : 'Select Custom in the menu above to define a custom rule for X',
+              ]"
+              :style="[
+                choiceRule == 'Stochastic'
+                  ? { color: 'grey' }
+                  : { color: 'white' },
+              ]"
+              rows="1"
+              cols="61"
+              :disabled="xRule != 'Custom' || choiceRule == 'Stochastic'"
+              required
+            ></textarea>
+            <br />
             <v-select
               v-model="fRule"
               :items="fRules"
@@ -59,6 +79,26 @@
               persistent-hint
               required
             ></v-select>
+            <textarea
+              v-model="customfRule"
+              placeholder="Type rule for F here"
+              label="Custom rule for F"
+              :title="[
+                fRule == 'Custom'
+                  ? ''
+                  : 'Select Custom in the menu above to define a custom rule for F',
+              ]"
+              :style="[
+                choiceRule == 'Stochastic'
+                  ? { color: 'grey' }
+                  : { color: 'white' },
+              ]"
+              rows="1"
+              cols="61"
+              :disabled="fRule != 'Custom' || choiceRule == 'Stochastic'"
+              required
+            ></textarea>
+            <br />
             <br />
             <v-select
               v-model="branchStochastic"
@@ -70,8 +110,8 @@
               v-model="branchAng"
               color="orange"
               label="Branching Angle (°)"
-              min="0"
-              max="360"
+              min="-180"
+              max="180"
               thumb-label
             ></v-slider>
             <v-select
@@ -109,13 +149,9 @@
                 <span>Refresh form</span>
               </v-tooltip>
             </v-slide-x-reverse-transition>
-            <!-- <v-btn
-            color="orange"
-            text
-            @click="submit"
-          >
-            Submit
-          </v-btn> -->
+            <v-btn color="orange" text @click="clearCanvas">
+              Clear Canvas
+            </v-btn>
           </v-card-actions>
         </v-card-text>
       </v-card>
@@ -128,6 +164,7 @@
       </div>
       <v-card class="rounded-card">
         <DrawingBoard
+          ref="canv"
           :lengthStochastic="lengthStochastic"
           :branchStochastic="branchStochastic"
           :branchLen="branchLen"
@@ -137,6 +174,8 @@
           :choiceRule="choiceRule"
           :fRule="fRule"
           :xRule="xRule"
+          :customxRule="customxRule"
+          :customfRule="customfRule"
         ></DrawingBoard>
       </v-card>
     </v-col>
@@ -144,57 +183,66 @@
 </template>
 
 <script>
-import vueP5 from 'vue-p5';
-import Logo from '../components/Logo.vue';
-import VuetifyLogo from '../components/VuetifyLogo.vue';
-import DrawingBoard from '../components/DrawingBoard.vue';
+import vueP5 from "vue-p5";
+import Logo from "../components/Logo.vue";
+import VuetifyLogo from "../components/VuetifyLogo.vue";
+import DrawingBoard from "../components/DrawingBoard.vue";
 
 export default {
   data() {
     return {
-      lengthStochastics: ['Deterministic', '50% Variable', '10% Variable'],
-      lengthStochastic: 'Deterministic',
-      branchStochastics: ['Deterministic', '1% Variable', '0.1% Variable'],
-      branchStochastic: 'Deterministic',
+      lengthStochastics: ["Deterministic", "50% Variable", "10% Variable"],
+      lengthStochastic: "Deterministic",
+      branchStochastics: ["Deterministic", "1% Variable", "0.1% Variable"],
+      branchStochastic: "Deterministic",
       branchLen: 2,
       iters: 3,
       branchAng: 20,
-      initStates: ['X', 'F'],
-      initState: 'X',
-      choiceRules: ['Deterministic', 'Stochastic'],
-      choiceRule: 'Deterministic',
+      initStates: ["X", "F"],
+      initState: "X",
+      choiceRules: ["Deterministic", "Stochastic"],
+      choiceRule: "Deterministic",
       fRules: [
-        'FF',
-        'F[+F]F[-F]F',
-        'F[+F]F[-F][F]',
-        'FF-[-F+F+F]+[+F-F-F]',
-        'F[+F]F',
-        'F[-F]F',
+        "FF",
+        "F[+F]F[-F]F",
+        "F[+F]F[-F][F]",
+        "FF-[-F+F+F]+[+F-F-F]",
+        "F[+F]F",
+        "F[-F]F",
+        "Custom",
       ],
-      fRule: 'FF',
+      fRule: "FF",
+      customxRule: "",
       xRules: [
-        'F[+X]F[-X]+X',
-        'F[+X][-X]FX',
-        'F-[[X]+X]+F[+FX]-X',
-        'F-[[X]+X]+F[+FX]-X',
+        "F[+X]F[-X]+X",
+        "F[+X][-X]FX",
+        "F-[[X]+X]+F[+FX]-X",
+        "F-[[X]+X]+F[+FX]-X",
+        "Custom",
       ],
-      xRule: 'F[+X]F[-X]+X',
+      xRule: "F[+X]F[-X]+X",
+      customfRule: "",
     };
   },
   components: {
     DrawingBoard,
   },
   methods: {
+    clearCanvas() {
+      this.$refs.canv.clearCanvas();
+    },
     resetForm() {
-      this.lengthStochastic = 'Deterministic';
-      (this.branchStochastic = 'Deterministic'),
+      this.lengthStochastic = "Deterministic";
+      (this.branchStochastic = "Deterministic"),
         (this.branchLen = 2),
         (this.iters = 3),
         (this.branchAng = 20),
-        (this.initState = 'X'),
-        (this.choiceRule = 'Deterministic'),
-        (this.fRule = 'FF'),
-        (this.xRule = 'F[+X]F[-X]+X');
+        (this.initState = "X"),
+        (this.choiceRule = "Deterministic"),
+        (this.fRule = "FF"),
+        (this.xRule = "F[+X]F[-X]+X"),
+        (this.customxRule = ""),
+        (this.customfRule = "");
     },
   },
 };
@@ -204,6 +252,7 @@ export default {
 h1 .special-color {
   color: greenyellow;
 }
+
 .rounded-card {
   border-radius: 25px;
 }
