@@ -13,12 +13,6 @@
 <script>
 import Vue from "vue";
 import VueP5, { mouseX, mouseY, strokeWeight } from "vue-p5";
-//import mouseX from 'vue-p5';
-//import mouseY from 'vue-p5';
-//import strokeWeight from 'vue-p5';
-
-//import {cos, sin} from Math;
-//import {Point, DrawingState, drawSystem} from '../graphic_tree_split_up_js/Drawing.js';
 
 export default {
   props: {
@@ -53,13 +47,15 @@ export default {
   components: {
     VueP5: () => import("vue-p5"),
   },
-  methods: {
+  
+  methods: {          
     setup(sketch) {
-      var drawingarea = document.getElementById("drawingarea");
-      sketch.resizeCanvas(drawingarea.offsetWidth, 0.75 * window.innerHeight);
-      sketch.background("white");
-      sketch.angleMode(this.DEGREES);
-      sketch.noLoop();
+          var drawingarea = document.getElementById("drawingarea");
+          sketch.resizeCanvas(drawingarea.offsetWidth, 0.75* window.innerHeight);
+          // sketch.background('white');
+          sketch.stroke(255)
+          sketch.angleMode(this.DEGREES);
+          sketch.noLoop();
     },
 
     getRndFloat(min, max) {
@@ -143,6 +139,7 @@ export default {
        */
       return rules[char] || char;
     },
+    
 
     *fragmentGenerator(system, string) {
       for (const char of string) {

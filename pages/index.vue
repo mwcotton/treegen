@@ -109,9 +109,11 @@
         </v-card-text>
       </v-card>
     </v-col>
-    <v-col>
+    <v-col cols="12" sm="8" md="6">
       <div class="text-center">
         <h1 style=font-size:50px>Click to draw <span class="special-color">trees!</span></h1>
+      </div>
+      <v-card class="rounded-card">
         <DrawingBoard
         :lengthStochastic="lengthStochastic"
         :branchStochastic="branchStochastic"
@@ -123,7 +125,7 @@
         :fRule="fRule"
         :xRule="xRule"
         ></DrawingBoard>
-      </div>
+    </v-card>
     </v-col>
   </v-row>
 </template>
