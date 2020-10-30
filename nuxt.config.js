@@ -7,10 +7,6 @@ export default {
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
 
-  // Add the router base
-  router: {
-    base: '/Down-To-Programme/treegen/'
-  },
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -65,7 +61,6 @@ export default {
       }
     }
   },
-
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
   }
