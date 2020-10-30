@@ -310,7 +310,7 @@ export default {
         const drawingState = new DrawingState(origin, -90);
         const fragmentIterator = this.fragmentGenerator(system, systemState);
         this.drawSystem(system, fragmentIterator, drawingState, sketch);
-      },
+      }
     },
   },
 };
