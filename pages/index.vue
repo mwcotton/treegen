@@ -141,14 +141,13 @@
                 <span>Refresh form</span>
               </v-tooltip>
             </v-slide-x-reverse-transition>
-            <!-- <v-btn
+            <v-btn
             color="orange"
             text
-            @click="submit"
-          >
-            Submit
-          </v-btn> -->
-          </v-card-actions>
+            @click="clearCanvas"
+            Clear Canvas
+          </v-btn>
+        </v-card-actions>
         </v-card-text>
       </v-card>
     </v-col>
@@ -160,15 +159,16 @@
       </div>
       <v-card class="rounded-card">
         <DrawingBoard
-          :lengthStochastic="lengthStochastic"
-          :branchStochastic="branchStochastic"
-          :branchLen="branchLen"
-          :iters="iters"
-          :branchAng="branchAng"
-          :initState="initState"
-          :choiceRule="choiceRule"
-          :fRule="fRule"
-          :xRule="xRule"
+        ref="canv"
+        :lengthStochastic="lengthStochastic"
+        :branchStochastic="branchStochastic"
+        :branchLen="branchLen"
+        :iters="iters"
+        :branchAng="branchAng"
+        :initState="initState"
+        :choiceRule="choiceRule"
+        :fRule="fRule"
+        :xRule="xRule"
           :customxRule="customxRule"
           :customfRule="customfRule"
         ></DrawingBoard>
@@ -223,18 +223,23 @@ export default {
     DrawingBoard,
   },
   methods: {
-    resetForm() {
-      this.lengthStochastic = 'Deterministic';
-      (this.branchStochastic = 'Deterministic'),
-        (this.branchLen = 2),
-        (this.iters = 3),
-        (this.branchAng = 20),
-        (this.initState = 'X'),
-        (this.choiceRule = 'Deterministic'),
-        (this.fRule = 'FF'),
-        (this.xRule = 'F[+X]F[-X]+X'),
-        (this.customxRule = ''),
-        (this.customfRule = '');
+
+    clearCanvas () {
+      this.$refs.canv.clearCanvas()
+    },
+    resetForm () {
+      this.lengthStochastic = "Deterministic"
+      this.branchStochastic = "Deterministic",
+      this.branchLen = 2,
+      this.iters=  3,
+      this.branchAng = 20,
+      this.initState = "X",
+      this.choiceRule = "Deterministic",
+      this.fRule = "FF",
+      this.xRule = "F[+X]F[-X]+X",
+      (this.customxRule = ''),
+      (this.customfRule = '');
+
     },
   },
 };
