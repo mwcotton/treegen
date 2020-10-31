@@ -2,9 +2,9 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
       <div class="text-center">
-        <h1 style="font-size: 50px">
+        <!-- <h1 style="font-size: 50px">
           <span class="special-color">Tree</span>Gen
-        </h1>
+        </h1> -->
       </div>
       <v-card class="rounded-card">
         <v-card-title class="headline">

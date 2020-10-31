@@ -30,11 +30,7 @@
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>
-        <h2>
-          <span class="special-color">D</span>own<span class="special-color"
-            >T</span
-          >o<span class="special-color">P</span>rogramme
-        </h2>
+        <h2><span class="special-color">Tree</span>Gen</h2>
       </v-toolbar-title>
     </v-app-bar>
     <v-main>

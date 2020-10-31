@@ -1,38 +1,60 @@
-<<<<<<< HEAD
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![BCH compliance](https://bettercodehub.com/edge/badge/Down-To-Programme/2020-software-engineering-project2-treegen?branch=master)](https://bettercodehub.com/)
 
-[![BCH compliance](https://bettercodehub.com/edge/badge/Down-To-Programme/2020-software-engineering-project2-treegen?branch=master)](https://bettercodehub.com/)
+# TreeGen
 
-# treegen
+This web application allows you to visualise the fractal-like biological patterns that can be generated using simple Lindenmayer systems.
 
-## Build Setup
+The live project can be found at https://down-to-programme.github.io/treegen/.
+
+Treegren has been built using the [Vue.js](https://vuejs.org) and [Nuxt.js](https://nuxtjs.org) frameworks and specifically took advantage of functionality from [vue-p5](https://github.com/Kinrany/vue-p5). The project is hosted using [Github Pages](https://pages.github.com).
+
+# Development guidluines
+
+## Build a Development Environment
+
+A development environement can be generated in the following way.
+
+Install dependencies
 
 ```bash
-# install dependencies
 $ npm install
+```
 
-# serve with hot reload at localhost:3000
+Serve with hot reload at localhost:3000
+
+```bash
 $ npm run dev
+```
 
-# build for production and launch server
+Build for production and launch server
+
+```bash
 $ npm run build
 $ npm run start
+```
 
-# generate static project
+Generate static project
+
+```bash
 $ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
-=======
-# STATIC
+NB: Occasionally vue-p5 does not install correctly and needs to be innsrtalled separately, via runnin the following command.
 
-**This directory is not required, you can delete it if you don't want to use it.**
+```bash
+npm install --save vue vue-p5
+```
 
-This directory contains your static files.
-Each file inside this directory is mapped to `/`.
-Thus you'd want to delete this README.md before deploying to production.
+## Project Structure
 
-Example: `/static/robots.txt` is mapped as `/robots.txt`.
+The project structure is largely based on the default [Vue.js](https://vuejs.org) and [Nuxt.js](https://nuxtjs.org) frameworks structure.
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/guide/assets#static).
->>>>>>> 7c981668e6151363ef9bc6e88b77a45745a77880
+Currently there exist three main pages: index, about, links. The drawing functionality on the index page is managed by the DrawingBoard.Vue component, which communicates with the page through props and refs.
+
+Testing is managed using Vue Test Utils and tests live in the test directory.
+
+## Pull Requests and Issues
+
+Pull requests are always welcome, and DownToProgramme appreciates any help you give. Please ensure that all tests are passing to speed the process of merges being approved.
+
+Please feel free to [open a new issue](https://github.com/Down-To-Programme/treegen/issues) for any reason.
