@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 import VueP5, {
   mouseX,
@@ -19,14 +19,7 @@ import VueP5, {
   strokeWeight,
   mouseOver,
   mouseOut,
-} from "vue-p5";
-//import mouseX from 'vue-p5';
-//import mouseY from 'vue-p5';
-//import strokeWeight from 'vue-p5';
-
-//import {cos, sin} from Math;
-//import {Point, DrawingState, drawSystem} from '../graphic_tree_split_up_js/Drawing.js';
-
+} from 'vue-p5';
 
 export default {
   props: {
@@ -48,25 +41,25 @@ export default {
       inCanvas: false,
       sket: false,
       fRules: [
-        "FF",
-        "F[+F]F[-F]F",
-        "F[+F]F[-F][F]",
-        "FF-[-F+F+F]+[+F-F-F]",
-        "F[+F]F",
-        "F[-F]F",
-        "Custom",
+        'FF',
+        'F[+F]F[-F]F',
+        'F[+F]F[-F][F]',
+        'FF-[-F+F+F]+[+F-F-F]',
+        'F[+F]F',
+        'F[-F]F',
+        'Custom',
       ],
       xRules: [
-        "F[+X]F[-X]+X",
-        "F[+X][-X]FX",
-        "F-[[X]+X]+F[+FX]-X",
-        "F-[[X]+X]+F[+FX]-X",
-        "Custom",
+        'F[+X]F[-X]+X',
+        'F[+X][-X]FX',
+        'F-[[X]+X]+F[+FX]-X',
+        'F-[[X]+X]+F[+FX]-X',
+        'Custom',
       ],
     };
   },
   components: {
-    VueP5: () => import("vue-p5"),
+    VueP5: () => import('vue-p5'),
   },
   methods: {
     keypressed() {
@@ -78,14 +71,14 @@ export default {
     },
     mouseover(sketch) {
       this.inCanvas = true;
-      console.log("over");
+      console.log('over');
     },
     mouseout(sketch) {
       this.inCanvas = false;
-      console.log("out");
+      console.log('out');
     },
     setup(sketch) {
-      var drawingarea = document.getElementById("drawingarea");
+      var drawingarea = document.getElementById('drawingarea');
       sketch.resizeCanvas(drawingarea.offsetWidth, 0.75 * window.innerHeight);
       sketch.stroke(255);
       sketch.angleMode(this.DEGREES);
@@ -104,23 +97,21 @@ export default {
       // make length stochastic
       var stoch_factor = 1;
 
-      if (this.lengthStochastic == "50% Variable") {
+      if (this.lengthStochastic == '50% Variable') {
         stoch_factor = this.getRndFloat(0.5, 1.5);
-      } else if (this.lengthStochastic == "10% Variable") {
+      } else if (this.lengthStochastic == '10% Variable') {
         stoch_factor = this.getRndFloat(0.9, 1.1);
       }
       // make angle stochastic
       var factor_angle = 1;
-      if (this.branchStochastic == "1% Variable") {
+      if (this.branchStochastic == '1% Variable') {
         factor_angle = this.getRndFloat(0.99, 1.01);
       }
-      if (this.branchStochastic == "0.1% Variable") {
+      if (this.branchStochastic == '0.1% Variable') {
         factor_angle = this.getRndFloat(0.999, 1.001);
-        // console.log("0.1%" + factor_angle);
       }
       let { x, y } = drawingState.state.position;
       let d = drawingState.state.direction;
-      // console.log("(drawForward) Angle d = " + d);
       var conversion = 180 / Math.PI;
       let newX =
         x +
@@ -133,16 +124,20 @@ export default {
           Math.sin((d / conversion) * factor_angle) *
           stoch_factor;
       drawingState.push();
-      //drawingState.stack.push(JSON.stringify(drawingState.state));
       sketch.strokeWeight(drawingState.state.strokeWeight || 1);
       sketch.line(x, y, newX, newY);
       drawingState.pop();
-      //drawingState.state = JSON.parse(drawingState.stack.pop() || '{}');
       drawingState.state.position.x = newX;
       drawingState.state.position.y = newY;
     },
 
     drawSystem(system, fragmentIterator, drawingState, sketch) {
+      /** Parameters:
+       * system
+       * fragmentIterator
+       * drawingState
+       * sketch
+       */
       const drawFrame = () => {
         const iter = fragmentIterator.next();
         if (iter.done) {
@@ -150,16 +145,11 @@ export default {
         }
         const fragment = iter.value;
         for (const character of fragment) {
-          //if ( character == 'F'){
-          //  drawForward(drawingState, system.params, sketch);
-          //} else {
           const drawingFunction = system.commands[character];
-          //// console.log(drawingFunction);
 
           if (drawingFunction) {
             drawingFunction(drawingState, system.params, sketch);
           }
-          //}
         }
         if (!this.clearWatch) {
           requestAnimationFrame(drawFrame);
@@ -194,19 +184,18 @@ export default {
        * ==================
        * apply rules for every character in previousGeneration
        */
-      let nextGeneration = "";
+      let nextGeneration = '';
       for (const character of previousGeneration) {
         const nextCharacters = this.applyRule(system.rules, character);
         nextGeneration += nextCharacters;
       }
       return nextGeneration;
     },
-    
+
     getXrule() {
-      if (this.choiceRule == "Stochastic") {
+      if (this.choiceRule == 'Stochastic') {
         var rand = Math.random();
         var n = this.xRules.length - 1;
-        //console.log(rand)
         var x_num = -1;
         for (var i = 1; i <= n; i++) {
           if (rand < i / n) {
@@ -215,7 +204,6 @@ export default {
           }
         }
         var x = this.xRules[x_num];
-        //console.log('(getXrule) Rule for x = '+ x);
       } else if (this.xRule == 'Custom') {
         var x = this.customxRule;
       } else {
@@ -226,10 +214,9 @@ export default {
     },
 
     getFrule() {
-      if (this.choiceRule == "Stochastic") {
+      if (this.choiceRule == 'Stochastic') {
         var rand = Math.random();
         var n = this.fRules.length - 1;
-        //console.log(rand)
         var f_num = -1;
         for (var i = 1; i <= n; i++) {
           if (rand < i / n) {
@@ -265,16 +252,16 @@ export default {
           //'F': printme,
           F: this.drawForward,
           // (this.lengthStochastic,this.branchStochastic,drawingState, params)
-          "-"(drawingState, params, sketch) {
+          '-'(drawingState, params, sketch) {
             drawingState.state.direction -= params.angle;
           },
-          "+"(drawingState, params, sketch) {
+          '+'(drawingState, params, sketch) {
             drawingState.state.direction += params.angle;
           },
-          "["(drawingState, params, sketch) {
+          '['(drawingState, params, sketch) {
             drawingState.push();
           },
-          "]"(drawingState, params, sketch) {
+          ']'(drawingState, params, sketch) {
             drawingState.pop();
           },
         },
@@ -282,7 +269,7 @@ export default {
       return tree;
     },
     async mouseclicked(sketch) {
-      var rect = document.getElementById("drawingarea").getBoundingClientRect();
+      var rect = document.getElementById('drawingarea').getBoundingClientRect();
       if (
         sketch.mouseX > 0 &&
         sketch.mouseY > 0 &&
@@ -292,7 +279,6 @@ export default {
         console.log(rect.top, rect.right, rect.bottom, rect.left);
         console.log(sketch.mouseX, sketch.mouseY);
         console.log(sketch);
-        //// console.log('clickity click');
         this.clearWatch = false;
         const origin = new Point(sketch.mouseX, sketch.mouseY);
         let system = this.getRules();
@@ -303,7 +289,6 @@ export default {
           system = this.getRules();
           const drawingState = new DrawingState(origin, -90);
           const shouldDraw = i === this.iters - 1;
-          //systemState = renderAGeneration(system, systemState, drawingState, shouldDraw);
           systemState = this.renderAGeneration(system, systemState);
         }
 
@@ -341,7 +326,7 @@ class DrawingState {
   }
 
   pop() {
-    this.state = JSON.parse(this.stack.pop() || "{}");
+    this.state = JSON.parse(this.stack.pop() || '{}');
   }
 
   get depth() {
